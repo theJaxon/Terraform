@@ -18,3 +18,8 @@ variable "words" {
     error_message = "At least 20 adverbs must be provided"
   }
 }
+
+variable "number_of_files" {
+  default = 9
+  type    = number
+}
