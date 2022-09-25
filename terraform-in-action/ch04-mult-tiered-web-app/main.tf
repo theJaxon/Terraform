@@ -4,8 +4,10 @@ module "autoscaling" {
 }
 
 module "database" {
-  source    = "./modules/database"
-  namespace = var.namespace
+  source      = "./modules/database"
+  namespace   = var.namespace
+  vpc         = module.networking.vpc
+  database_sg = module.networking.security_groups.database
 }
 
 module "networking" {
