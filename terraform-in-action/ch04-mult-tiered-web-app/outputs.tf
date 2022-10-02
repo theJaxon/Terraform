@@ -1,8 +1,8 @@
 output "db_password" {
-  value     = module.database.database_config.db_password
+  value     = module.database.database_config.password
   sensitive = true
 }
 
 output "lb_dns_name" {
-  value = ""
+  value = module.autoscaling.lb_dns_name
 }
