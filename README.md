@@ -161,7 +161,9 @@ output "date_time" {
 ```hcl
 locals {
   my_list = ["one", "zwei", "three"]
+  # Square brackets are used to return a list
   uppercase_list = [for item in local.my_list: upper(item)]
+  # Curly brackets are used to return a map
   uppercase_map_convert = { for item in local.my_list: item => upper(item) } 
 }
 
