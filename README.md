@@ -170,4 +170,58 @@ locals {
 output "iterations" {
   value = local.uppercase_map_convert
 }
+
+
+# Filtering 
+locals {
+  numbers_list = [0, 1, 2, 3, 4, 5, 6]
+
+  # return number if the condition evaluated to true
+  even_numbers = [for number in local.numbers_list: number if number % 2 == 0]
+}
+
+output "even_numbers_list" {
+  value = local.even_numbers
+}
+```
+
+---
+
+### Heredocs
+- For outputting documentation, can be used with a similar syntax of Jinja2
+- The minus sign after the double less than sign is to indicate character stripping from the lines following
+
+```hcl
+locals {
+  name = ""
+}
+
+output "your_name" {
+  value = <<-EOT
+    This is a `heredoc` with directives
+    %{if local.name == "" }
+    Plase fill in the name
+    %{else}
+    Hi ${local.name}
+    %{endif}  
+  EOT
+}
+
+
+
+locals {
+  numbers_list = [0, 1, 2, 3, 4, 5, 6]
+}
+
+output "even_numbers" {
+  value = <<-EOT
+  %{for number in local.numbers_list}
+  %{if number % 2 == 0}
+  ${number} is even
+  %{endif}
+  %{endfor}
+  EOT
+} 
+
+
 ```
