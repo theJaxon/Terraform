@@ -225,3 +225,40 @@ output "even_numbers" {
 
 
 ```
+
+---
+
+### Backend
+- A shared storage medium that stores `statefile` and can optionally support locking to prevent statefile corruption
+
+```hcl
+  backend "s3" {
+    bucket = "name"
+    key    = "key"
+    dynamodb_table = "lock"
+  }
+```
+
+---
+
+### Workspace
+- Used in case we want same configuration across multiple environments (dev, staging, prod)
+- Workspaces are a **second state file** associated with the configuration
+
+```bash
+# By default we're already using a default workspace
+terraform workspace list # shows default
+
+# Create new workspace
+terraform workspace new staging
+
+# Show the current workspace
+terraform workspace show
+
+# Select default workspace instead
+terraform workspace select default
+```
+
+---
+
+### Custom resources with Python and Null Provider
