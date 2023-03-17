@@ -103,7 +103,7 @@ data "aws_iam_policy_document" "lambda_exec_role_policy" {
 
 ```hcl
 resource "aws_cloudwatch_log_group" "log_group" {
-    name = "/aws/lambda/${aws_lamda_function.lambda.function_name}
+    name              = "/aws/lambda/${aws_lamda_function.lambda.function_name}
     retention_in_days = 14
 }
 ```
@@ -118,10 +118,10 @@ resource "aws_s3_bucket" "bucket" {
 
 resource "aws_lambda_function" "lambda" {
     function_name = "hello-function"
-    filename = data.archive_file.lambda_zip.output_path
-    handler = "main.handler"
-    runtime = "nodejs12.x"
-    role    = aws_iam_role.lambda_exec_role.arn
+    filename      = data.archive_file.lambda_zip.output_path
+    handler       = "main.handler"
+    runtime       = "nodejs12.x"
+    role          = aws_iam_role.lambda_exec_role.arn
     environment {
         variables = {
             BUCKET = aws_s3_bucket.bucket.bucket
@@ -131,3 +131,27 @@ resource "aws_lambda_function" "lambda" {
 ```
 
 - In code it can be accessed via `process.env.BUCKET`
+
+---
+
+### [External Data Source](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external)
+- Allows an external program implementing a specific protocol to act as a data source, exposing arbitrary data for use elsewhere in the Terraform configuration.
+
+- The problem being tackled is that we don't have the needed packages (specified via `package.json and package-lock.json` and placed in node_modules dir) 
+- We need a way to invoke `npm ci` via terraform
+
+```hcl
+data "external" "npm_ci" {
+    program = ["bash" , "-c" , <<EOT
+    (npm ci) >&2 && echo "{\"dest\": \"\"}"
+    EOT
+    ]
+    working_dir = "${path.module}/src"
+}
+
+data "archive_file" "lambda_zip" {
+    type        = "zip"
+    source_dir  = "${data.external.npm_ci.working_dir}/${data.external.npm_ci.result.dest}"
+    output_path = "/tmp/hello-world.zip"
+}
+```
